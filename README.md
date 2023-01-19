@@ -1,23 +1,14 @@
-Execution depuis Windows :
+Nécéssite :  
+  - Node avec npm  
+  - Docker
+  - Docker compose plugin
+  - Avoir les ports 8080 (api), 6379 (redis), 5672 and 15672 (rabbitmq) librent
 
-démarrer Docker Desktop
+Démarrage avec la commande : ./start.sh  
+Arrêt avec la commande : ./stop.sh  
 
-démarrer 2 terminaux WSL2 : 
-  - le premier démarrera un conteneur docker avec une instance rabbitmp :  
-    docker run -it --rm --name rabbitmq -p  5672:5672 -p 15672:15672 rabbitmq:3.11-management  
-      l'instance rabbitmq est visible à l'adresse : http://localhost:15672/   
-      l'identifiant de connection est : guest  
-      le mot de passe est             : guest  
-      un graphique de suivi des messages est disponible sous l'onglet 'Queues'  
-
-  - le second démarrera un conteneur docker avec une instance reddis qui nous sert de base de donnée :     
-    docker run -p 6379:6379 redis/redis-stack:latest  
-
-Ouvrir le projet avec Visual Studio Code : CloudComputing_AMQP  
-Démarrer l'api depuis le terminal du projet : npm run start:api  
-Démarrer le worker depuis un second terminal : npm run start:worker  
-  
-L'api est disponible sur l'adresse 'http://localhost:8080' et propose trois points d'entrées :   
+L'api est disponible sur l'adresse 'http://localhost:8080' (cf. docs\CloudComputing_AMQP.postman_collection.json).  
+Elle propose deux points d'entrées :   
   - Une methode Get avec la route : http://localhost:8080/orders/{orderId}/status  
 	Permet de récupérer le statut d'une commande depuis sont Id.
 
@@ -25,8 +16,8 @@ L'api est disponible sur l'adresse 'http://localhost:8080' et propose trois poin
   http://localhost:8080/orders  
       Prend en body (JSON): 
       {
-          "ref": 1,
-          "status": "InProgress"
+          "dish": "tiramisu",
+          "status": "commande en cours de traitement"
       }
       Permet de créer une commande dans la base Redis, d'envoyer l'Id créé en message vers la queue 'commandes' du rabbitmq.
       Retourne l'Id de la commande créée.
