@@ -14,10 +14,9 @@ démarrer 2 terminaux WSL2 :
     docker run -p 6379:6379 redis/redis-stack:latest  
 
 Ouvrir le projet avec Visual Studio Code : CloudComputing_AMQP  
-Démarrer l'api depuis le terminal du projet : npm start  
-  Les logs de l'api affiche les différentes résultats à chaque étapes.
-
-
+Démarrer l'api depuis le terminal du projet : npm run start:api  
+Démarrer le worker depuis un second terminal : npm run start:worker  
+  
 L'api est disponible sur l'adresse 'http://localhost:8080' et propose trois points d'entrées :   
   - Une methode Get avec la route : http://localhost:8080/orders/{orderId}/status  
 	Permet de récupérer le statut d'une commande depuis sont Id.
@@ -31,12 +30,6 @@ L'api est disponible sur l'adresse 'http://localhost:8080' et propose trois poin
       }
       Permet de créer une commande dans la base Redis, d'envoyer l'Id créé en message vers la queue 'commandes' du rabbitmq.
       Retourne l'Id de la commande créée.
-
-  - Une methode Put avec la route : http://localhost:8080/consume  
-      Permet de consommer les messages en attentes dans la queue 'commandes', 
-      modifie les commandes en attribuant le statut 'confirmed' à chaque commande.
-      Retourne un status code 200.
-
 
 
 Documentations utilisés  
