@@ -34,7 +34,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"dish\": \"tiramisu\",\r\n    \"status\": \"InProgress\"\r\n}",
+					"raw": "{\r\n    \"dish\": \"tiramisu\",\r\n    \"status\": \"commande en cours de traitement\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
