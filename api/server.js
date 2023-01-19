@@ -4,6 +4,8 @@ import amqp from 'amqplib';
 import cors from 'cors';
 
 const queueName = 'commandes';
+const exchangeName = 'orderExchange'
+const exchangeType = 'fanout'
 
 // create an express app and use JSON
 let app = new express();
@@ -32,14 +34,15 @@ app.put('/orders', async (req, res) =>
   try {
     connection = await amqp.connect(`amqp://${(process.env.EXECUTION_ENVIRONMENT === 'production')?'rabbitmq':'localhost'}:5672`);
     channel = await connection.createChannel();
-
+    
+    
     var msg = JSON.stringify({id, message:'créer plat'});
+    
+    await channel.assertExchange(exchangeName, exchangeType, { durable: true, autoDelete: false })
+    const queue = await channel.assertQueue(queueName, { durable: true });
+    await channel.bindQueue(queue.queue, exchangeName, '')
 
-    await channel.assertQueue(queueName, { durable: true });
-
-    channel.sendToQueue(queueName, Buffer.from(msg), {
-      persistent: true
-    });
+    channel.publish(exchangeName, '', Buffer.from(msg));
     console.log(" [x] Sent message to rabbitmq: '%s'", msg);
 
     await channel.close();
