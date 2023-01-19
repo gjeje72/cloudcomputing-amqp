@@ -31,7 +31,7 @@ app.put('/orders', async (req, res) =>
     connection = await amqp.connect('amqp://localhost:5672');
     channel = await connection.createChannel();
 
-    var msg = id;
+    var msg = JSON.stringify({id, message:'créer plat'});
 
     await channel.assertQueue(queueName, { durable: true });
 

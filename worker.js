@@ -5,7 +5,7 @@ const queueName = 'commandes';
 
 let connection;
 let channel;
-let receivedMessage = [];
+let receivedMessages = [];
 
 async function consume () {
   try {
@@ -14,19 +14,20 @@ async function consume () {
     
     await channel.assertQueue(queueName, { durable: true });
     await channel.consume(queueName, (message) => {
-      receivedMessage.push(message.content.toString());
-      console.log(" [x] Received message from rabbitmq: '%s'", message.content.toString());
+      let receivedMessage = JSON.parse(message.content.toString());
+      receivedMessages.push(receivedMessage);
+      console.log(" [x] Received message from rabbitmq: '%s'", receivedMessage.message);
       try
       {
-        Promise.all(receivedMessage.map(async (element) => 
+        Promise.all(receivedMessages.map(async (element) => 
         {
-          let order = await repository.fetch(element);
-          order.status = 'confirmed';
+          let order = await repository.fetch(element.id);
+          order.status = 'commande traitée';
           let updatedOrderid = await repository.save(order);
-          const index = receivedMessage.indexOf(element);
+          const index = receivedMessages.indexOf(element);
           if (index > -1) 
-            receivedMessage.splice(index, 1);
-          console.log(" [x] Order '%s' updated", updatedOrderid)
+            receivedMessages.splice(index, 1);
+          console.log(" [x] Order '%s' updated to status 'commande traitée.'", updatedOrderid)
         })).then(() => {
           console.log(' [*] Waiting for messages. To exit press CTRL+C');
         })
