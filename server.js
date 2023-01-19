@@ -55,38 +55,6 @@ app.put('/orders', async (req, res) =>
   }
 });
 
-app.put('/consume', async (req, res) => 
-{
-  let connection;
-  let channel;
-  let receivedMessage = [];
-  try {
-    connection = await amqp.connect('amqp://localhost:5672');
-    channel = await connection.createChannel();
-
-    await channel.assertQueue(queueName, { durable: true });
-    await channel.consume(queueName, (message) => {
-      receivedMessage.push(message.content.toString());
-      console.log(" [x] Received message from rabbitmq: '%s'", message.content.toString());
-    }, { noAck: true });
-    receivedMessage.forEach(async (element) => {
-      let order = await repository.fetch(element);
-      order.status = 'confirmed';
-      let updatedOrderid = await repository.save(order);
-      console.log(" [x] Order '%s' updated", updatedOrderid);
-    });
-    console.log(' [*] Waiting for messages. To exit press CTRL+C');
-    
-  } catch (err) {
-    console.warn(err);
-  }
-  finally{
-    if(connection)
-      await connection.close();
-    res.sendStatus(200);
-  }
-});
-
 // start listening
 const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}..`));
