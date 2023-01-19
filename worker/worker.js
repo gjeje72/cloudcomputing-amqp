@@ -9,7 +9,7 @@ let receivedMessages = [];
 
 async function consume () {
   try {
-    connection = await amqp.connect('amqp://localhost:5672');
+    connection = await amqp.connect(`amqp://${(process.env.EXECUTION_ENVIRONMENT === 'production')?'rabbitmq':'localhost'}:5672`);
     channel = await connection.createChannel();
     
     await channel.assertQueue(queueName, { durable: true });

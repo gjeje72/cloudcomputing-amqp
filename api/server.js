@@ -1,12 +1,14 @@
 import express from 'express';
 import { orderRepository as repository } from './order-repository.js';
 import amqp from 'amqplib';
+import cors from 'cors';
 
 const queueName = 'commandes';
 
 // create an express app and use JSON
 let app = new express();
 app.use(express.json());
+app.use(cors())
 
 // setup the root level GET to return status of an order
 app.get('/orders/:id/status', async (req, res) => {
@@ -21,14 +23,14 @@ app.put('/orders', async (req, res) =>
   let channel;
 
   // set all the properties, converting missing properties to null
-  order.ref = req.body.ref ?? null;
+  order.dish = req.body.dish ?? null;
   order.status = req.body.status ?? null;
 
   // save the order to Redis
   let id = await repository.save(order);
-  console.log(` [x] Order created : ${order.status} ${order.ref}`);
+  console.log(` [x] Order created : ${order.status} ${order.dish}`);
   try {
-    connection = await amqp.connect('amqp://localhost:5672');
+    connection = await amqp.connect(`amqp://${(process.env.EXECUTION_ENVIRONMENT === 'production')?'rabbitmq':'localhost'}:5672`);
     channel = await connection.createChannel();
 
     var msg = JSON.stringify({id, message:'créer plat'});
