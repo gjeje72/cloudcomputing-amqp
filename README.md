@@ -7,7 +7,7 @@ Nécéssite :
 Démarrage avec la commande : ./start.sh  
 Arrêt avec la commande : ./stop.sh  
 
-L'api est disponible sur l'adresse 'http://localhost:8080' (cf. docs\CloudComputing_AMQP.postman_collection.json).  
+L'api est disponible sur l'adresse http://localhost:8080 (cf. docs\CloudComputing_AMQP.postman_collection.json).  
 Elle propose deux points d'entrées :   
   - Une methode Get avec la route : http://localhost:8080/orders/{orderId}/status  
 	Permet de récupérer le statut d'une commande depuis sont Id.
